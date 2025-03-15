@@ -108,6 +108,9 @@ CREATE TABLE Bus (
     FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID)
 );
 
+CREATE INDEX idx_ticket_departure ON Ticket (DepartureTime);
+SHOW INDEXES FROM Ticket;
+
 SELECT * FROM user;
 SELECT * FROM passenger;
 SELECT * FROM WebsiteSupport;
