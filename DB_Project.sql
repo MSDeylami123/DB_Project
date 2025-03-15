@@ -12,4 +12,16 @@ CREATE TABLE User (
     AccountStatus ENUM('Active', 'Inactive') DEFAULT 'Active',
     CHECK (Email IS NOT NULL OR Phone IS NOT NULL)
 );
+
+CREATE TABLE Passenger (
+    UserID INT PRIMARY KEY,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+CREATE TABLE WebsiteSupport (
+    UserID INT PRIMARY KEY,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
 SELECT * FROM user;
+SELECT * FROM passenger;
+SELECT * FROM WebsiteSupport;
