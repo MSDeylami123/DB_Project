@@ -74,6 +74,38 @@ CREATE TABLE Reports (
     FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID)
 );
 
+CREATE TABLE Train (
+    TrainID INT PRIMARY KEY,
+    TicketID INT NOT NULL,
+    StarRating ENUM('3', '4', '5') NOT NULL,
+    Facilities JSON,
+    CompartmentOption BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID)
+);
+
+CREATE TABLE Flight (
+    FlightID INT PRIMARY KEY AUTO_INCREMENT,
+    TicketID INT NOT NULL,
+    AirlineName VARCHAR(100) NOT NULL,
+    FlightClass ENUM('Economy', 'Business', 'First Class') NOT NULL,
+    Stops INT NOT NULL,
+    FlightNumber VARCHAR(20) NOT NULL,
+    FromAirport VARCHAR(100) NOT NULL,
+    DestinationAirport VARCHAR(100) NOT NULL,
+    Facilities JSON,
+    FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID)
+);
+
+CREATE TABLE Bus (
+    BusID INT PRIMARY KEY,
+    TicketID INT NOT NULL,
+    BusCompany VARCHAR(100) NOT NULL,
+    BusType ENUM('VIP', 'Regular', 'Sleeper') NOT NULL,
+    SeatsPerRow ENUM('1+2', '2+2') NOT NULL,
+    Facilities JSON,
+    FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID)
+);
+
 SELECT * FROM user;
 SELECT * FROM passenger;
 SELECT * FROM WebsiteSupport;
@@ -81,3 +113,6 @@ SELECT * FROM Reservation;
 SELECT * FROM Ticket;
 SELECT * FROM Payment;
 SELECT * FROM Reports;
+SELECT * FROM Train;
+SELECT * FROM Flight;
+SELECT * FROM Bus;
