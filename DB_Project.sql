@@ -23,20 +23,10 @@ CREATE TABLE WebsiteSupport (
     FOREIGN KEY (UserID) REFERENCES User(UserID)
 );
 
-CREATE TABLE Reservation (
-    ReservationID INT PRIMARY KEY,
-    UserID INT NOT NULL,
-    TicketID INT NOT NULL,
-    ReservationStatus ENUM('Reserved', 'Paid', 'Canceled') NOT NULL,
-    ReservationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ExpirationTime TIMESTAMP NOT NULL,
-    FOREIGN KEY (UserID) REFERENCES User(UserID),
-    FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID),
-    CHECK (ExpirationTime > ReservationTime)
-);
 
 CREATE TABLE Ticket (
     TicketID INT PRIMARY KEY,
+    TripType ENUM('one-way','Round-trip'),
     VehicleType ENUM('Plane', 'Train', 'Bus') NOT NULL,
     Origin VARCHAR(100) NOT NULL,
     Destination VARCHAR(100) NOT NULL,
@@ -47,6 +37,18 @@ CREATE TABLE Ticket (
     CarrierID INT,
     TravelClass ENUM('Economy', 'Business', 'VIP') NOT NULL,
 	CHECK (Price >= 0)
+);
+
+CREATE TABLE Reservation (
+    ReservationID INT PRIMARY KEY,
+    UserID INT NOT NULL,
+    TicketID INT NOT NULL,
+    ReservationStatus ENUM('Reserved', 'Paid', 'Canceled') NOT NULL,
+    ReservationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ExpirationTime TIMESTAMP NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES User(UserID),
+    FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID),
+    CHECK (ExpirationTime > ReservationTime)
 );
 
 CREATE TABLE Payment (
