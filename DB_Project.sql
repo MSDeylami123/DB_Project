@@ -51,6 +51,7 @@ CREATE TABLE Reservation (
     CHECK (ExpirationTime > ReservationTime)
 );
 
+
 CREATE TABLE Payment (
     PaymentID INT PRIMARY KEY,
     UserID INT NOT NULL,
@@ -109,13 +110,27 @@ CREATE TABLE Bus (
 );
 
 CREATE INDEX idx_ticket_departure ON Ticket (DepartureTime);
-SHOW INDEXES FROM Ticket;
+CREATE INDEX Email ON User (Email);
+CREATE INDEX Phone ON User (Phone);
+CREATE INDEX idx_last_name ON User (LastName);
+SHOW INDEXES FROM User;
+
+INSERT INTO user
+VALUES (1,"ali","moradi","amoradi@gmail.com","091826354","Passenger","Tehran","kjwefiuuuisd",Default,"Active"),
+(2,"mohammad","rezaii","ahuiwhd@gmail.com","091026333","Passenger","Tehran","099911112hgssd",Default,"Active"),
+(3,"mohsen","hoseini","rer736eh@gmail.com","094456616","Passenger","Kerman","01233333hfg",Default,"Active"),
+(4,"Arya","dehdashti","ccccvd123@gmail.com","098922221","Passenger","Karaj","llldfffrree234",Default,"Active");
+
+INSERT INTO passenger
+VALUES("1"),("2"),("3"),("4");
+
+
 
 SELECT * FROM user;
 SELECT * FROM passenger;
 SELECT * FROM WebsiteSupport;
-SELECT * FROM Reservation;
 SELECT * FROM Ticket;
+SELECT * FROM Reservation;
 SELECT * FROM Payment;
 SELECT * FROM Reports;
 SELECT * FROM Train;
