@@ -77,8 +77,14 @@ CREATE TABLE Reports (
     FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID)
 );
 
+CREATE TABLE Vehicle (
+    Vehicle INT PRIMARY KEY,
+    TicketId INT NOT NULL,
+    FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID)
+);
+
 CREATE TABLE Train (
-    TrainID INT PRIMARY KEY,
+    Vehicle INT PRIMARY KEY,
     TicketID INT NOT NULL,
     StarRating ENUM('3', '4', '5') NOT NULL,
     Facilities JSON,
@@ -87,7 +93,7 @@ CREATE TABLE Train (
 );
 
 CREATE TABLE Flight (
-    PlaneID INT PRIMARY KEY,
+    Vehicle INT PRIMARY KEY,
     TicketID INT NOT NULL,
     AirlineName VARCHAR(100) NOT NULL,
     FlightClass ENUM('Economy', 'Business', 'First Class') NOT NULL,
@@ -100,7 +106,7 @@ CREATE TABLE Flight (
 );
 
 CREATE TABLE Bus (
-    BusID INT PRIMARY KEY,
+    Vehicle INT PRIMARY KEY,
     TicketID INT NOT NULL,
     BusCompany VARCHAR(100) NOT NULL,
     BusType ENUM('VIP', 'Regular', 'Sleeper') NOT NULL,
