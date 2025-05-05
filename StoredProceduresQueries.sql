@@ -1,3 +1,4 @@
+-- 1
 DELIMITER //
 CREATE PROCEDURE GetUserTicketsByContact(IN contact VARCHAR(100))
 BEGIN
@@ -10,7 +11,7 @@ BEGIN
 END //
 DELIMITER ;
 
-
+-- 2
 DELIMITER //
 CREATE PROCEDURE GetUsersWithCanceledReservations(IN contact VARCHAR(100))
 BEGIN
@@ -26,7 +27,7 @@ BEGIN
 END //
 DELIMITER ;
 
-
+-- 3
 DELIMITER //
 CREATE PROCEDURE GetTicketsByCity(IN inputCity VARCHAR(100))
 BEGIN
@@ -38,7 +39,7 @@ BEGIN
 END //
 DELIMITER ;
 
-
+-- 4
 DELIMITER //
 CREATE PROCEDURE SearchTicketsByPhrase(IN phrase VARCHAR(100))
 BEGIN
@@ -56,9 +57,7 @@ BEGIN
 END //
 DELIMITER ;
 
-
-
-
+-- 5
 DELIMITER //
 CREATE PROCEDURE GetUsersFromSameCity(IN contact VARCHAR(100))
 BEGIN
@@ -74,9 +73,7 @@ BEGIN
 END //
 DELIMITER ;
 
-
-
-
+-- 6
 DELIMITER //
 CREATE PROCEDURE GetTopUsersSinceDate(IN sinceDate DATE, IN limitN INT)
 BEGIN
@@ -90,8 +87,7 @@ BEGIN
 END //
 DELIMITER ;
 
-
-
+-- 7
 DELIMITER //
 CREATE PROCEDURE GetTicketsAndCancellationsByVehicle(IN vType VARCHAR(50))
 BEGIN
@@ -110,8 +106,7 @@ BEGIN
 END //
 DELIMITER ;
 
-
-
+-- 8
 DELIMITER //
 CREATE PROCEDURE GetTopUsersByReportTopic(IN topic VARCHAR(100))
 BEGIN
