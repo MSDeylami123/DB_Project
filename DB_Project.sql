@@ -15,12 +15,12 @@ CREATE TABLE User (
 
 CREATE TABLE Passenger (
     UserID INT PRIMARY KEY,
-    FOREIGN KEY (UserID) REFERENCES User(UserID)
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
 CREATE TABLE WebsiteSupport (
     UserID INT PRIMARY KEY,
-    FOREIGN KEY (UserID) REFERENCES User(UserID)
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
 
@@ -33,7 +33,7 @@ CREATE TABLE Ticket (
     DepartureTime DATETIME NOT NULL,
     ArrivalTime DATETIME NOT NULL,
     Price DECIMAL(10,2) NOT NULL,
-    Capacity INT NOT NULL,
+    Capacity INT NOT NULL CHECK(Capacity>=0),
     CarrierID INT,
     TravelClass ENUM('Economy', 'Business', 'VIP') NOT NULL,
 	CHECK (Price >= 0)
@@ -87,7 +87,7 @@ CREATE TABLE Train (
 );
 
 CREATE TABLE Flight (
-    FlightID INT PRIMARY KEY AUTO_INCREMENT,
+    PlaneID INT PRIMARY KEY,
     TicketID INT NOT NULL,
     AirlineName VARCHAR(100) NOT NULL,
     FlightClass ENUM('Economy', 'Business', 'First Class') NOT NULL,
@@ -108,23 +108,6 @@ CREATE TABLE Bus (
     Facilities JSON,
     FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID)
 );
-
-CREATE INDEX idx_ticket_departure ON Ticket (DepartureTime);
-CREATE INDEX Email ON User (Email);
-CREATE INDEX Phone ON User (Phone);
-CREATE INDEX idx_last_name ON User (LastName);
-SHOW INDEXES FROM User;
-
-INSERT INTO user
-VALUES (1,"ali","moradi","amoradi@gmail.com","091826354","Passenger","Tehran","kjwefiuuuisd",Default,"Active"),
-(2,"mohammad","rezaii","ahuiwhd@gmail.com","091026333","Passenger","Tehran","099911112hgssd",Default,"Active"),
-(3,"mohsen","hoseini","rer736eh@gmail.com","094456616","Passenger","Kerman","01233333hfg",Default,"Active"),
-(4,"Arya","dehdashti","ccccvd123@gmail.com","098922221","Passenger","Karaj","llldfffrree234",Default,"Active");
-
-INSERT INTO passenger
-VALUES("1"),("2"),("3"),("4");
-
-
 
 SELECT * FROM user;
 SELECT * FROM passenger;
