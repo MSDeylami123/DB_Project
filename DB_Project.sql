@@ -214,18 +214,49 @@ INSERT INTO Bus (VehicleID, TicketID, BusCompany, BusType, SeatsPerRow, Faciliti
 
 
 
+CREATE INDEX idx_user_usertype ON User(UserType);
+CREATE INDEX idx_user_city ON User(City);
+CREATE INDEX idx_user_accountstatus ON User(AccountStatus);
 
+CREATE INDEX idx_ticket_vehicletype ON Ticket(VehicleType);
+CREATE INDEX idx_ticket_origin_destination ON Ticket(Origin, Destination);
+CREATE INDEX idx_ticket_departuretime ON Ticket(DepartureTime);
+CREATE INDEX idx_ticket_arrivaltime ON Ticket(ArrivalTime);
+CREATE INDEX idx_ticket_travelclass ON Ticket(TravelClass);
 
-SELECT * FROM user;
-SELECT * FROM passenger;
-SELECT * FROM WebsiteSupport;
-SELECT * FROM Ticket;
-SELECT * FROM Reservation;
-SELECT * FROM Payment;
-SELECT * FROM Reports;
-SELECT * FROM Train;
-SELECT * FROM Flight;
-SELECT * FROM Bus;
+CREATE INDEX idx_reservation_userid ON Reservation(UserID);
+CREATE INDEX idx_reservation_ticketid ON Reservation(TicketID);
+CREATE INDEX idx_reservation_status ON Reservation(ReservationStatus);
+CREATE INDEX idx_reservation_expirationtime ON Reservation(ExpirationTime);
+
+CREATE INDEX idx_payment_userid ON Payment(UserID);
+CREATE INDEX idx_payment_reservationid ON Payment(ReservationID);
+CREATE INDEX idx_payment_method ON Payment(PaymentMethod);
+CREATE INDEX idx_payment_status ON Payment(PaymentStatus);
+
+CREATE INDEX idx_report_userid ON Reports(UserID);
+CREATE INDEX idx_report_ticketid ON Reports(TicketID);
+CREATE INDEX idx_report_reservationid ON Reports(ReservationID);
+CREATE INDEX idx_report_category ON Reports(ReportCategory);
+CREATE INDEX idx_report_status ON Reports(ProcessingStatus);
+
+CREATE INDEX idx_vehicle_ticketid ON Vehicle(TicketID);
+
+CREATE INDEX idx_train_ticketid ON Train(TicketID);
+CREATE INDEX idx_train_starrating ON Train(StarRating);
+CREATE INDEX idx_train_compartmentoption ON Train(CompartmentOption);
+
+CREATE INDEX idx_flight_ticketid ON Flight(TicketID);
+CREATE INDEX idx_flight_airline ON Flight(AirlineName);
+CREATE INDEX idx_flight_flightclass ON Flight(FlightClass);
+CREATE INDEX idx_flight_stops ON Flight(Stops);
+CREATE INDEX idx_flight_from_to_airport ON Flight(FromAirport, DestinationAirport);
+
+CREATE INDEX idx_bus_ticketid ON Bus(TicketID);
+CREATE INDEX idx_bus_company ON Bus(BusCompany);
+CREATE INDEX idx_bus_type ON Bus(BusType);
+CREATE INDEX idx_bus_seatsperrow ON Bus(SeatsPerRow);
+
 
 
 
