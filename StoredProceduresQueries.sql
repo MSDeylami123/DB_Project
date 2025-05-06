@@ -69,7 +69,7 @@ BEGIN
   LIMIT 1;
   
   SELECT * FROM User
-  WHERE City = userCity AND (Email <> contact AND Phone <> contact);
+  WHERE City = userCity;
 END //
 DELIMITER ;
 
@@ -95,14 +95,7 @@ BEGIN
   SELECT t.*
   FROM Reservation r
   JOIN Ticket t ON r.TicketID = t.TicketID
-  WHERE t.VehicleType = vType;
-
-  -- Related cancellations
-  SELECT r.*
-  FROM Reservation r
-  JOIN Ticket t ON r.TicketID = t.TicketID
-  WHERE t.VehicleType = vType AND r.ReservationStatus = 'Canceled'
-  ORDER BY r.ReservationTime;
+  WHERE t.VehicleType = vType AND r.ReservationStatus = 'Canceled';
 END //
 DELIMITER ;
 
