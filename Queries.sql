@@ -92,8 +92,9 @@ WHERE UserType = 'Support';
 SELECT u.FirstName, u.LastName
 FROM Reservation r
 JOIN User u ON r.UserID = u.UserID
+WHERE R.ReservationStatus = 'Paid'
 GROUP BY u.UserID
-HAVING COUNT(DISTINCT r.TicketID) >= 2;
+HAVING COUNT(*) >= 2;
 
 -- 13
 SELECT u.FirstName, u.LastName
@@ -113,11 +114,13 @@ GROUP BY u.UserID, u.Email, u.Phone
 HAVING COUNT(DISTINCT t.VehicleType) = 3;
 
 -- 15
-SELECT t.*
-FROM Reservation r
-JOIN Ticket t ON r.TicketID = t.TicketID
-WHERE DATE(r.ReservationTime) = CURRENT_DATE
-ORDER BY r.ReservationTime;
+SELECT T.*, P.PaymentTime
+FROM Payment P
+JOIN Reservation R ON P.ReservationID = R.ReservationID
+JOIN Ticket T ON R.TicketID = T.TicketID
+WHERE DATE(P.PaymentTime) = CURDATE()
+ORDER BY P.PaymentTime;
+
 
 -- 16
 SELECT t.TicketID, COUNT(*) AS SoldCount
@@ -177,7 +180,7 @@ WHERE TicketID IN (
 -- 22
 SELECT TicketID, ReportCategory, COUNT(*) AS ReportCount
 FROM Reports
-GROUP BY TicketID, ReportCategory
+GROUP BY TicketID,ReportCategory
 HAVING TicketID = (
     SELECT TicketID
     FROM Reports
