@@ -1,6 +1,6 @@
 USE mydb;
 CREATE TABLE User (
-    UserID INT PRIMARY KEY,
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     Email VARCHAR(100) UNIQUE,
@@ -25,7 +25,7 @@ CREATE TABLE WebsiteSupport (
 
 
 CREATE TABLE Ticket (
-    TicketID INT PRIMARY KEY,
+    TicketID INT PRIMARY KEY AUTO_INCREMENT,
     TripType ENUM('one-way','Round-trip'),
     VehicleType ENUM('Plane', 'Train', 'Bus') NOT NULL,
     Origin VARCHAR(100) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE Ticket (
 );
 
 CREATE TABLE Reservation (
-    ReservationID INT PRIMARY KEY,
+    ReservationID INT PRIMARY KEY AUTO_INCREMENT,
     UserID INT NOT NULL,
     TicketID INT NOT NULL,
     ReservationStatus ENUM('Reserved', 'Paid', 'Canceled') NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE Reservation (
 
 
 CREATE TABLE Payment (
-    PaymentID INT PRIMARY KEY,
+    PaymentID INT PRIMARY KEY AUTO_INCREMENT,
     UserID INT NOT NULL,
     ReservationID INT NOT NULL,
     Amount DECIMAL(10,2) NOT NULL CHECK (Amount >= 0),
@@ -65,7 +65,7 @@ CREATE TABLE Payment (
 );
 
 CREATE TABLE Reports (
-    ReportID INT PRIMARY KEY,
+    ReportID INT PRIMARY KEY AUTO_INCREMENT,
     UserID INT NOT NULL,
     TicketID INT,
     ReservationID INT,
@@ -84,7 +84,7 @@ CREATE TABLE Vehicle (
 );
 
 CREATE TABLE Train (
-    VehicleID INT PRIMARY KEY,
+    VehicleID INT PRIMARY KEY AUTO_INCREMENT,
     TicketID INT NOT NULL,
     StarRating ENUM('3', '4', '5') NOT NULL,
     Facilities JSON,
@@ -97,7 +97,6 @@ CREATE TABLE Flight (
     VehicleID INT PRIMARY KEY,
     TicketID INT NOT NULL,
     AirlineName VARCHAR(100) NOT NULL,
-    FlightClass ENUM('Economy', 'Business', 'First Class') NOT NULL,
     Stops INT NOT NULL,
     FlightNumber VARCHAR(20) NOT NULL,
     FromAirport VARCHAR(100) NOT NULL,
@@ -111,7 +110,6 @@ CREATE TABLE Bus (
     VehicleID INT PRIMARY KEY,
     TicketID INT NOT NULL,
     BusCompany VARCHAR(100) NOT NULL,
-    BusType ENUM('VIP', 'Regular', 'Sleeper') NOT NULL,
     SeatsPerRow ENUM('1+2', '2+2') NOT NULL,
     Facilities JSON,
     FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID),

@@ -11,6 +11,8 @@ BEGIN
 END //
 DELIMITER ;
 
+CALL GetUserTicketsByContact('alice1@example.com')
+
 -- 2
 DELIMITER //
 CREATE PROCEDURE GetUsersWithCanceledReservations(IN contact VARCHAR(100))
@@ -27,6 +29,7 @@ BEGIN
 END //
 DELIMITER ;
 
+CALL GetUsersWithCanceledReservations('jake10@example.com')
 -- 3
 DELIMITER //
 CREATE PROCEDURE GetTicketsByCity(IN inputCity VARCHAR(100))
@@ -87,6 +90,7 @@ BEGIN
 END //
 DELIMITER ;
 
+CALL GetTopUsersSinceDate(Current_Time-Interval 5 DAY,5)
 -- 7
 DELIMITER //
 CREATE PROCEDURE GetTicketsAndCancellationsByVehicle(IN vType VARCHAR(50))

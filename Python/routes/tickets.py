@@ -10,7 +10,7 @@ tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 JWT_SECRET = 'your_jwt_secret_key_here'
 JWT_ALGORITHM = 'HS256'
 
-# Redis Client
+# Redis 
 redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 
 # Decorator to protect routes
@@ -118,30 +118,84 @@ def search_tickets():
 def ticket_details(ticket_id):
     try:
         cur = current_app.mysql.connection.cursor()
-        query = """
-            SELECT TicketID, Origin, Destination, DepartureTime, ArrivalTime, Price, VehicleType, TravelClass, CarrierID
+
+        # Get main ticket info
+        cur.execute("""
+            SELECT TicketID, Origin, Destination, DepartureTime, ArrivalTime, Price,
+                   VehicleType, TravelClass, Capacity
             FROM Ticket
             WHERE TicketID = %s
-        """
-        cur.execute(query, (ticket_id,))
+        """, (ticket_id,))
         row = cur.fetchone()
-        cur.close()
 
         if not row:
+            cur.close()
             return jsonify({"message": "Ticket not found"}), 404
 
-        details = {
-            "ticketID": row[0],
-            "origin": row[1],
-            "destination": row[2],
-            "departureTime": row[3].isoformat(),
-            "arrivalTime": row[4].isoformat(),
-            "price": float(row[5]),
-            "vehicleType": row[6],
-            "travelClass": row[7],
-            "carrierID": row[8]
+        # Map columns manually (in order of SELECT)
+        ticket = {
+            "TicketID": row[0],
+            "Origin": row[1],
+            "Destination": row[2],
+            "DepartureTime": row[3],
+            "ArrivalTime": row[4],
+            "Price": row[5],
+            "VehicleType": row[6],
+            "TravelClass": row[7],
+            "Capacity": row[8]
         }
 
+        details = {
+            "ticketID": ticket["TicketID"],
+            "origin": ticket["Origin"],
+            "destination": ticket["Destination"],
+            "departureTime": ticket["DepartureTime"].isoformat(),
+            "arrivalTime": ticket["ArrivalTime"].isoformat(),
+            "price": float(ticket["Price"]),
+            "vehicleType": ticket["VehicleType"],
+            "travelClass": ticket["TravelClass"],
+            "capacity": ticket["Capacity"],
+            "facilities": None  # default if not applicable
+        }
+
+        vehicle_type = ticket["VehicleType"].lower()
+
+        if vehicle_type == 'plane':
+            cur.execute("""
+                SELECT AirlineName, FlightNumber, Facilities
+                FROM Flight
+                WHERE TicketID = %s
+            """, (ticket_id,))
+            row = cur.fetchone()
+            if row:
+                details["airlineName"] = row[0]
+                details["flightNumber"] = row[1]
+                details["facilities"] = row[2]
+
+        elif vehicle_type == 'train':
+            cur.execute("""
+                SELECT Operator, TrainNumber, Facilities
+                FROM Train
+                WHERE TicketID = %s
+            """, (ticket_id,))
+            row = cur.fetchone()
+            if row:
+                details["trainOperator"] = row[0]
+                details["trainNumber"] = row[1]
+                details["facilities"] = row[2]
+
+        elif vehicle_type == 'bus':
+            cur.execute("""
+                SELECT BusCompany, Facilities
+                FROM Bus
+                WHERE TicketID = %s
+            """, (ticket_id,))
+            row = cur.fetchone()
+            if row:
+                details["busCompany"] = row[0]
+                details["facilities"] = row[1]
+
+        cur.close()
         return jsonify(details), 200
 
     except Exception as e:

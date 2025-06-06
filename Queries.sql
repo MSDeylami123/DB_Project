@@ -57,10 +57,12 @@ GROUP BY t.VehicleType;
 SELECT u.FirstName, u.LastName, COUNT(*) AS TicketsBought
 FROM Reservation r
 JOIN User u ON r.UserID = u.UserID
-WHERE r.ReservationTime >= NOW() - INTERVAL 7 DAY
+WHERE r.ReservationTime >= NOW() - INTERVAL 7 DAY 
 GROUP BY u.UserID
 ORDER BY TicketsBought DESC
 LIMIT 3;
+
+
 
 -- 9
 SELECT u.City, COUNT(*) AS TicketsSold
