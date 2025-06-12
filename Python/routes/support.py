@@ -68,13 +68,26 @@ def respond_to_report():
     data = request.get_json()
     report_id = data.get("ReportID")
     new_status = data.get("ProcessingStatus")
+    answer = data.get("Answer")  # New field (optional)
 
     if not report_id or new_status not in ['Reviewed', 'Pending']:
         return jsonify({"error": "Invalid input"}), 400
 
     cur = current_app.mysql.connection.cursor()
     try:
-        cur.execute("UPDATE Reports SET ProcessingStatus = %s WHERE ReportID = %s", (new_status, report_id))
+        if answer is not None:
+            cur.execute("""
+                UPDATE Reports 
+                SET ProcessingStatus = %s, Answer = %s 
+                WHERE ReportID = %s
+            """, (new_status, answer, report_id))
+        else:
+            cur.execute("""
+                UPDATE Reports 
+                SET ProcessingStatus = %s 
+                WHERE ReportID = %s
+            """, (new_status, report_id))
+
         current_app.mysql.connection.commit()
     except Exception as e:
         current_app.mysql.connection.rollback()
@@ -83,6 +96,7 @@ def respond_to_report():
         cur.close()
 
     return jsonify({"message": "Report updated"})
+
 
 # 1. View all reservations
 @support_bp.route('/reservations', methods=['GET'])
