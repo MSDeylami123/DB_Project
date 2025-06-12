@@ -37,8 +37,11 @@ def signup():
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         cur.execute(sql, (first_name, last_name, email, phone, user_type, city, password_hash))
-        current_app.mysql.connection.commit()
         user_id = cur.lastrowid
+        cur.execute("INSERT INTO UserWallet (UserID, Balance) VALUES (%s, %s)", (user_id, 0.00))
+
+        current_app.mysql.connection.commit()
+        
         cur.close()
 
         # Cache user info in Redis
@@ -74,24 +77,30 @@ def login():
 
     try:
         cur = current_app.mysql.connection.cursor()
-        cur.execute("SELECT UserID, PasswordHash FROM User WHERE Email=%s", (email,))
+        # Select UserID, PasswordHash, and UserType
+        cur.execute("SELECT UserID, PasswordHash, UserType FROM User WHERE Email=%s", (email,))
         row = cur.fetchone()
         cur.close()
 
         if row:
-            user_id, password_hash = row[0], row[1]
+            user_id, password_hash, user_type = row[0], row[1], row[2]
             if current_app.bcrypt.check_password_hash(password_hash, password):
                 payload = {
                     'user_id': user_id,
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_EXP_DELTA_SECONDS)
                 }
                 token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-                return jsonify({"message": "Login successful", "token": token}), 200
+                return jsonify({
+                    "message": "Login successful",
+                    "token": token,
+                    "userType": user_type
+                }), 200
 
         return jsonify({"message": "Invalid credentials"}), 401
 
     except Exception as e:
         return jsonify({"message": f"Login error: {str(e)}"}), 500
+
 
 
 @users_bp.route('/update-profile', methods=['PUT'])
@@ -112,12 +121,25 @@ def update_profile():
     last_name = data.get('lastName')
     phone = data.get('phone')
     city = data.get('city')
+    balance = data.get('balance')  # optional
 
     try:
         cur = current_app.mysql.connection.cursor()
+
+        # Update user profile
         cur.execute("""
             UPDATE User SET FirstName=%s, LastName=%s, Phone=%s, City=%s WHERE UserID=%s
         """, (first_name, last_name, phone, city, user_id))
+
+        # Update wallet balance if provided
+        if balance is not None:
+            cur.execute("SELECT COUNT(*) FROM UserWallet WHERE UserID=%s", (user_id,))
+            exists = cur.fetchone()[0] > 0
+            if exists:
+                cur.execute("UPDATE UserWallet SET Balance=%s WHERE UserID=%s", (balance, user_id))
+            else:
+                cur.execute("INSERT INTO UserWallet (UserID, Balance) VALUES (%s, %s)", (user_id, balance))
+
         current_app.mysql.connection.commit()
 
         # Fetch email to update Redis cache
@@ -127,12 +149,17 @@ def update_profile():
 
         if row:
             email = row[0]
-            redis_client.hset(f"user:{email}", mapping={
+            mapping = {
                 "firstName": first_name,
                 "lastName": last_name,
                 "phone": phone or "",
                 "city": city or ""
-            })
+            }
+            # Also cache balance if updated
+            if balance is not None:
+                mapping["balance"] = str(balance)  # store as string in Redis
+
+            redis_client.hset(f"user:{email}", mapping=mapping)
 
         return jsonify({"message": "Profile updated successfully"}), 200
 

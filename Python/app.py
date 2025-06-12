@@ -23,12 +23,17 @@ from routes.flights import flights_bp
 from routes.reservations import reservations_bp
 from routes.otp import otp_bp
 from routes.tickets import tickets_bp
+from routes.reports import report_bp
+from routes.support import support_bp
+
 
 app.register_blueprint(users_bp)
 app.register_blueprint(flights_bp)
 app.register_blueprint(otp_bp)
 app.register_blueprint(tickets_bp)
 app.register_blueprint(reservations_bp)
+app.register_blueprint(report_bp)
+app.register_blueprint(support_bp)
 
 # === Background task to cancel expired reservations ===
 def cancel_expired_reservations():
