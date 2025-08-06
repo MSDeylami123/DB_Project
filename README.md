@@ -1,33 +1,35 @@
 # 🧳 Travel Ticket Reservation System
 
-This project is a full-stack Travel Ticket Reservation System that allows users to book tickets for flights, trains, and buses. The system handles user management, ticket reservations, payments, and supports rich data analysis through stored procedures and queries.
+This project is a  Travel Ticket Reservation System that allows users to book tickets for flights, trains, and buses. The system handles user management, ticket reservations, payments, and allows data analysis using stored procedures and queries.
 
 ---
 
 ## 📚 Project Phases
 
 ### Phase 1: Database Design
-- Designed an **ERD (Entity Relationship Diagram)** to map out core entities and relationships.
+- Designed an **ERD (Entity Relationship Diagram)** to show core entities and relationships.
 - Created normalized SQL tables for:
   - `Users`
   - `Tickets`
   - `Reservations`
   - `Payments`
-  - `Flights`, `Trains`, `Buses` (polymorphic vehicle structure)
-  - Supporting tables and foreign key constraints
+  - `Flights`, `Trains`, `Buses`
 
 ### Phase 2: Advanced SQL Implementation
 - Normalized all tables to **Third Normal Form (3NF)**.
-- Created **indexes**, **constraints**, and **triggers** to ensure data integrity.
+- Created **indexes**,**primary keys**, **foreign keys** and **other constraints** to ensure data integrity.
+- Added other supporting tables
 - Developed **analytical queries** for:
   - Revenue analysis
   - Most popular routes
   - Active users
   - Reservation trends
+  - And...
 - Wrote **stored procedures** for:
   - Ticket reservation automation
   - Cancellation and refund processes
   - Data cleanup (expired reservations)
+  - And...
 
 ### Phase 3: Backend Development
 - Developed a **Python Flask backend**.
