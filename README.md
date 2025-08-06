@@ -47,15 +47,126 @@ This project is a  Travel Ticket Reservation System that allows users to book ti
 
 - **Backend**: Python (Flask)
 - **Database**: MySQL
-- **ORM / Querying**: Raw SQL + SQLAlchemy (optional)
-- **Authentication**: JWT (JSON Web Tokens)
-- **Caching / Async Tasks**: Redis (for reservation expiration handling)
+- **Auth**: JWT
+- **OTP**: Email/SMS-compatible
+- **Cache & Background Jobs**: Redis
+- **API Testing**: cURL
 
 ---
 
-## 🚀 How to Run (Dev)
+## 📁 Project Structure
 
-> _Coming soon: add your instructions here or let me know to write them for you._
+```
+Python/
+├── app.py
+├── db.py
+├── requirements.txt
+├── routes/
+│   ├── flights.py
+│   ├── otp.py
+│   ├── reports.py
+│   ├── reservations.py
+│   ├── support.py
+│   ├── tickets.py
+│   └── users.py
+└── __pycache__/
+```
+
+---
+
+## 🚀 How to Run
+
+---
+
+## 🔁 Redis Setup & Configuration
+
+### 🧰 How to Set Up and Run a Redis Server
+
+1. **Install Redis**:
+
+   On Ubuntu/Debian:
+   ```bash
+   sudo apt update
+   sudo apt install redis-server
+   ```
+
+   On macOS (using Homebrew):
+   ```bash
+   brew install redis
+   ```
+
+   On Windows:
+   Use the [Memurai Redis fork](https://www.memurai.com/) or run Redis via WSL or Docker.
+
+2. **Start Redis**:
+   ```bash
+   redis-server
+   ```
+
+3. **Verify Redis is running**:
+   ```bash
+   redis-cli ping
+   # Response should be: PONG
+   ```
+
+### 🔌 How to Connect Redis to the Project
+
+In your `.env` file, set the Redis connection URL:
+
+```
+REDIS_URL=redis://localhost:6379
+```
+
+In Python, connect using:
+
+```python
+import redis
+redis_client = redis.StrictRedis.from_url(os.getenv("REDIS_URL"))
+```
+
+Redis is used to temporarily store and manage OTPs and handle expiration of reservations using a background cleanup thread.
+
+---
+
+## 📬 Full API List with Input & Output Description
+
+| Endpoint | Method | Description | Input | Output |
+|----------|--------|-------------|-------|--------|
+| `/otp/request-otp` | POST | Request an OTP for login/signup | `contact` (email or phone) | JSON: success message |
+| `/otp/verify-otp` | POST | Verify OTP code | `contact`, `otp` | JWT token (if valid) |
+| `/users/signup` | POST | Register a new user | `firstName`, `lastName`, `email`, `password`, `userType` | Success message |
+| `/users/login` | POST | Log in with email and password | `email`, `password` | JWT token |
+| `/users/update-profile` | PUT | Update user profile info | fields like `firstName`, `city`, etc. | Success or error |
+| `/tickets/cities` | GET | Get list of available cities | Header: JWT | List of cities |
+| `/tickets/search` | POST | Search for available tickets | `origin`, `destination`, `filters`, etc. | Matching tickets |
+| `/tickets/<id>` | GET | Get specific ticket details | Ticket ID in URL | Ticket info |
+| `/reservations/reserve` | POST | Reserve a ticket | `ticketID` | Reservation ID or error |
+| `/reservations/my` | GET | View current user's reservations | Header: JWT | List of reservations |
+| `/reservations/pay` | POST | Make payment | `reservationID`, `paymentMethod` | Confirmation |
+| `/reservations/purchased` | GET | View purchased tickets | Header: JWT | List of tickets |
+| `/reservations/penalty/<id>` | GET | Check penalty for cancellation | Reservation ID in URL | Penalty amount |
+| `/reservations/cancel` | POST | Cancel a reservation | `reservationID` | Status |
+| `/reports/submit` | POST | Submit a report | `ticketID`, `reservationID`, `category`, `text` | Status |
+| `/reports/my` | GET | View personal reports | Header: JWT | List of reports |
+| `/support/admin/reports` | GET | Admin view of all reports | Admin JWT | List of reports |
+| `/support/admin/reports/respond` | POST | Respond to a report | `ReportID`, `Answer`, `ProcessingStatus` | Status |
+| `/support/reservations` | GET | View all reservations (admin) | Admin JWT | List of reservations |
+| `/support/reservations/cancel` | POST | Cancel any reservation (admin) | `ReservationID` | Status |
+| `/support/payments/cancelled` | GET | View cancelled payments | Admin JWT | List of transactions |
+
+---
+
+## 🧪 How to Test APIs
+
+### Using Curl
+
+See the **🧪 API Testing (cURL Examples)** section above for real command examples.
+
+Make sure to replace:
+- `<TICKET_ID>` or `<ReservationID>` with actual values
+- `YOUR_JWT_TOKEN` with your real token
+
+Ensure your backend server is running on `http://localhost:5000` or adjust the URL as needed.
 
 ```bash
 # Clone the repository
