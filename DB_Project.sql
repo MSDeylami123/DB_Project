@@ -23,6 +23,17 @@ CREATE TABLE WebsiteSupport (
     FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
+CREATE TABLE UserWallet (
+    WalletID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL,
+    Balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    LastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_wallet_user FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    UNIQUE (UserID)
+);
+
+
 
 CREATE TABLE Ticket (
     TicketID INT PRIMARY KEY AUTO_INCREMENT,
@@ -58,11 +69,13 @@ CREATE TABLE Payment (
     ReservationID INT NOT NULL,
     Amount DECIMAL(10,2) NOT NULL CHECK (Amount >= 0),
     PaymentMethod ENUM('Bank Card', 'Wallet', 'Cryptocurrency') NOT NULL,
-    PaymentStatus ENUM('Successful', 'Failed', 'Pending') NOT NULL,
+    PaymentStatus ENUM('Successful', 'Failed', 'Pending') NOT NULL DEFAULT 'Pending',
     PaymentTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (UserID) REFERENCES User(UserID),
     FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID)
 );
+
+
 
 CREATE TABLE Reports (
     ReportID INT PRIMARY KEY AUTO_INCREMENT,
@@ -71,6 +84,7 @@ CREATE TABLE Reports (
     ReservationID INT,
     ReportCategory ENUM('Payment Issue', 'Travel Delay', 'Unexpected Cancellation') NOT NULL,
     ReportText TEXT NOT NULL,
+    Answer TEXT NOT NULL,
     ProcessingStatus ENUM('Reviewed', 'Pending') DEFAULT 'Pending',
     FOREIGN KEY (UserID) REFERENCES User(UserID),
     FOREIGN KEY (TicketID) REFERENCES Ticket(TicketID),

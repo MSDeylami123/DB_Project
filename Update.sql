@@ -44,4 +44,8 @@ INSERT INTO Bus (VehicleID, TicketID, BusCompany, SeatsPerRow, Facilities) VALUE
 (5024, 1039, 'Megabus', '1+2', '["Recliner Seats"]');
 
 
+INSERT INTO UserWallet (UserID, Balance)
+SELECT UserID, 0.00
+FROM User
+WHERE UserID NOT IN (SELECT UserID FROM UserWallet);
 
