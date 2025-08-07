@@ -125,8 +125,6 @@ Redis is used to temporarily store and manage OTPs and handle expiration of rese
 
 ---
 
----
-
 ## 🚀 How to Run
 
 After setting up Redis, the backend server is started by running the following command in the terminal:
