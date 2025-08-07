@@ -74,9 +74,6 @@ Python/
 
 ---
 
-## 🚀 How to Run
-
----
 
 ## 🔁 Redis Setup & Configuration
 
@@ -126,6 +123,17 @@ redis_client = redis.StrictRedis.from_url(os.getenv("REDIS_URL"))
 
 Redis is used to temporarily store and manage OTPs and handle expiration of reservations using a background cleanup thread.
 
+---
+
+---
+
+## 🚀 How to Run
+
+After setting up Redis, the backend server is started by running the following command in the terminal:
+
+```terminal
+python app.py
+```
 ---
 
 ## 📬 Full API List with Input & Output Description
