@@ -1,27 +1,34 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Login from "./pages/Login";
+import OTPLogin from "./pages/OTPLogin";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import SignUp from "./pages/SignUp";
 import "./App.css";
 
 function App() {
-  const [message, setMessage] = useState("Loading...");
-
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:5000/") // replace with your backend API URL
-      .then((res) => {
-        setMessage(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-        setMessage("Error fetching data");
-      });
-  }, []);
-
   return (
-    <div className="App">
-      <h1>Backend Message:</h1>
-      <p>{message}</p>
-    </div>
+    <Router>
+      <div className="App">
+        <h1>Ticket Reservation System</h1>
+        <nav>
+          <Link to="/signup">Sign Up</Link> |{" "}
+          <Link to="/login">Password Login</Link> |{" "}
+          <Link to="/otp-login">OTP Login</Link>
+        </nav>
+
+        <Routes>
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/otp-login" element={<OTPLogin />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
