@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 # Initialize DB
 mysql = init_db(app)
@@ -56,5 +56,10 @@ def cancel_expired_reservations():
 cleaner_thread = threading.Thread(target=cancel_expired_reservations, daemon=True)
 cleaner_thread.start()
 
+@app.route("/")
+def home():
+    return "Hello from backend!"
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
