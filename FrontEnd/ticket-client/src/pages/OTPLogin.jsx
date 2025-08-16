@@ -23,6 +23,7 @@ function OTPLogin() {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userEmail", email);
+        localStorage.setItem("userType", res.data.userType);
         setMessage("✅ OTP login successful!");
         navigate("/dashboard"); // redirect after login
       })

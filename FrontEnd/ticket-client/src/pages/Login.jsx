@@ -14,6 +14,7 @@ function Login() {
       const res = await api.post("/users/login", { email, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userEmail", email); // optional
+      localStorage.setItem("userType", res.data.userType || "Passenger");
       setMessage("✅ Login successful!");
       navigate("/dashboard"); // redirect after login
     } catch (err) {

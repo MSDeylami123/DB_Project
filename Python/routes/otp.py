@@ -60,7 +60,7 @@ def verify_otp():
 
         # Get user info to get user_id
         cur = current_app.mysql.connection.cursor()
-        cur.execute("SELECT UserID FROM User WHERE Email = %s OR Phone = %s", (contact, contact))
+        cur.execute("SELECT UserID, UserType FROM User WHERE Email = %s OR Phone = %s", (contact, contact))
         user = cur.fetchone()
         cur.close()
 
@@ -78,7 +78,8 @@ def verify_otp():
 
         return jsonify({
             "message": "OTP verified successfully",
-            "token": token
+            "token": token,
+            "userType": user[1]  # include actual userType
         }), 200
     else:
         return jsonify({"message": "Incorrect OTP"}), 401
