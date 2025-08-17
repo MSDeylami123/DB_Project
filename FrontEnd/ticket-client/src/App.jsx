@@ -6,6 +6,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SignUp from "./pages/SignUp";
 import Cities from "./pages/Cities";
 import UpdateProfile from "./pages/UpdateProfile";
+import Search from "./pages/Search";
+import TicketDetails from "./pages/TicketDetails";
+
 import "./App.css";
 
 function App() {
@@ -23,6 +26,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/otp-login" element={<OTPLogin />} />
+          
           <Route path="/update-profile" element={
             <ProtectedRoute>
               <UpdateProfile />
@@ -36,6 +40,16 @@ function App() {
           <Route path="/cities" element={
             <ProtectedRoute>
               <Cities />
+            </ProtectedRoute>
+          } />
+          <Route path="/search" element={
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          } />
+          <Route path="/tickets/:id" element={
+            <ProtectedRoute>
+              <TicketDetails />
             </ProtectedRoute>
           } />
         </Routes>

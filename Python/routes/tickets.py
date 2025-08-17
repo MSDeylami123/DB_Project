@@ -74,21 +74,23 @@ def search_tickets():
         params.append(vehicle_type)
 
     # Optional filters
-    if 'price_min' in filters:
+    if filters.get('price_min'):
         query += " AND Price >= %s"
         params.append(filters['price_min'])
-    if 'price_max' in filters:
+    if filters.get('price_max'):
         query += " AND Price <= %s"
         params.append(filters['price_max'])
-    if 'departure_after' in filters:
+    if filters.get('departure_after'):
         query += " AND TIME(DepartureTime) >= %s"
         params.append(filters['departure_after'])
-    if 'class' in filters:
+    if filters.get('class'):
         query += " AND TravelClass = %s"
         params.append(filters['class'])
 
+
     try:
         cur = current_app.mysql.connection.cursor()
+
         cur.execute(query, tuple(params))
         rows = cur.fetchall()
         cur.close()

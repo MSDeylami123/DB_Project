@@ -26,6 +26,9 @@ function Dashboard() {
             <li>
               <Link to="/update-profile">Update Profile</Link>
             </li>
+            <li>
+              <Link to="/search">Search Tickets</Link>
+            </li>
           </ul>
         </div>
       )}
