@@ -29,6 +29,12 @@ function Dashboard() {
             <li>
               <Link to="/search">Search Tickets</Link>
             </li>
+            <li>
+              <Link to="/reservations/my">My Reservations</Link>
+            </li>
+            <li>
+              <Link to="/reservations/purchased">My Purchases</Link>
+            </li>
           </ul>
         </div>
       )}

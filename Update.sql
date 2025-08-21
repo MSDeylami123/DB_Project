@@ -49,3 +49,56 @@ SELECT UserID, 0.00
 FROM User
 WHERE UserID NOT IN (SELECT UserID FROM UserWallet);
 
+
+INSERT INTO Ticket 
+(TripType, VehicleType, Origin, Destination, DepartureTime, ArrivalTime, Price, Capacity, CarrierID, TravelClass)
+VALUES
+-- ✈️ Flights (short-term & future)
+('one-way', 'Plane', 'Berlin', 'Paris', '2025-08-18 07:30:00', '2025-08-18 09:00:00', 120.50, 180, 1, 'Economy'),
+('Round-trip', 'Plane', 'Frankfurt', 'New York', '2025-08-20 10:00:00', '2025-08-20 18:00:00', 650.00, 220, 2, 'Business'),
+('one-way', 'Plane', 'Munich', 'London', '2025-08-17 23:45:00', '2025-08-18 01:10:00', 95.00, 160, 1, 'Economy'),
+('one-way', 'Plane', 'Hamburg', 'Tokyo', '2025-09-05 14:00:00', '2025-09-06 07:30:00', 899.99, 200, 3, 'Economy'),
+('Round-trip', 'Plane', 'Berlin', 'Dubai', '2025-12-01 22:00:00', '2025-12-02 06:30:00', 750.00, 250, 2, 'VIP'),
+
+-- 🚆 Trains (regional & long distance)
+('one-way', 'Train', 'Berlin Hbf', 'Munich Hbf', '2025-08-18 06:15:00', '2025-08-18 11:30:00', 60.00, 400, 4, 'Economy'),
+('Round-trip', 'Train', 'Cologne Hbf', 'Amsterdam Centraal', '2025-08-19 09:00:00', '2025-08-19 12:15:00', 80.00, 350, 5, 'Business'),
+('one-way', 'Train', 'Leipzig', 'Prague', '2025-08-22 13:00:00', '2025-08-22 16:30:00', 55.50, 300, 6, 'Economy'),
+('one-way', 'Train', 'Berlin Hbf', 'Warsaw', '2025-09-10 08:00:00', '2025-09-10 13:30:00', 70.00, 280, 4, 'Economy'),
+('Round-trip', 'Train', 'Munich Hbf', 'Vienna Hbf', '2025-10-05 15:30:00', '2025-10-05 18:00:00', 95.00, 320, 5, 'VIP'),
+
+-- 🚌 Buses (short/medium routes)
+('one-way', 'Bus', 'Berlin ZOB', 'Hamburg ZOB', '2025-08-18 05:45:00', '2025-08-18 08:45:00', 25.00, 50, 7, 'Economy'),
+('Round-trip', 'Bus', 'Frankfurt', 'Zurich', '2025-08-21 07:00:00', '2025-08-21 12:00:00', 40.00, 60, 8, 'Economy'),
+('one-way', 'Bus', 'Munich', 'Salzburg', '2025-08-17 22:00:00', '2025-08-17 23:45:00', 20.00, 45, 9, 'Economy'),
+('one-way', 'Bus', 'Berlin', 'Warsaw', '2025-09-15 06:00:00', '2025-09-15 14:00:00', 35.00, 55, 7, 'Business'),
+('Round-trip', 'Bus', 'Stuttgart', 'Prague', '2025-11-20 09:30:00', '2025-11-20 14:30:00', 50.00, 52, 8, 'VIP');
+
+INSERT INTO Vehicle (TicketID) VALUES
+(1041), (1042), (1043), (1044), (1045),
+(1046), (1047), (1048), (1049), (1050),
+(1051), (1052), (1053), (1054), (1055);
+
+INSERT INTO Flight (VehicleID, TicketID, AirlineName, Stops, FlightNumber, FromAirport, DestinationAirport, Facilities) VALUES
+(5026, 1041, 'United', 0, 'FL2074', 'New York Intl', 'San Francisco Intl', '["None"]'),
+(5027, 1042, 'American Airlines', 1, 'FL8426', 'Miami Intl', 'Seattle Intl', '["Recliner Seats"]'),
+(5028, 1043, 'Southwest', 1, 'FL8257', 'Houston Intl', 'Seattle Intl', '["Recliner Seats"]'),
+(5029, 1044, 'United', 0, 'FL2445', 'Chicago Intl', 'San Francisco Intl', '["Recliner Seats"]'),
+(5030, 1045, 'United', 0, 'FL2445', 'Chicago Intl', 'San Francisco Intl', '["Recliner Seats"]');
+
+INSERT INTO Train (VehicleID, TicketID, StarRating, Facilities, CompartmentOption) VALUES
+(5031, 1046, '4', '["TV", "Charger"]', 0),
+(5032, 1047, '5', '["None"]', 1),
+(5033, 1048, '3', '["None"]', 1),
+(5034, 1049, '4', '["Recliner Seats"]', 0),
+(5035, 1050, '4', '["None"]', 0);
+-- (5036, 1051, '5', '["AC", "Toilet"]', 0);
+
+
+INSERT INTO Bus (VehicleID, TicketID, BusCompany, SeatsPerRow, Facilities) VALUES
+(5036, 1055, 'Megabus', '1+2', '["Recliner Seats"]'),
+(5037, 1051, 'FlixBus', '2+2', '["None"]'),
+(5038, 1052, 'FlixBus', '2+2', '["AC", "Toilet"]'),
+(5039, 1053, 'Greyhound', '1+2', '["None"]'),
+(5040, 1054, 'Megabus', '1+2', '["Recliner Seats"]');
+

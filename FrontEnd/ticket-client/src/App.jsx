@@ -8,7 +8,8 @@ import Cities from "./pages/Cities";
 import UpdateProfile from "./pages/UpdateProfile";
 import Search from "./pages/Search";
 import TicketDetails from "./pages/TicketDetails";
-
+import MyReservations from "./pages/MyReservations";
+import MyPurchases from "./pages/MyPurchases";
 import "./App.css";
 
 function App() {
@@ -50,6 +51,16 @@ function App() {
           <Route path="/tickets/:id" element={
             <ProtectedRoute>
               <TicketDetails />
+            </ProtectedRoute>
+          } />
+          <Route path="/reservations/my" element={
+            <ProtectedRoute>
+              <MyReservations />
+            </ProtectedRoute>
+          } />
+          <Route path="/reservations/purchased" element={
+            <ProtectedRoute>
+              <MyPurchases />
             </ProtectedRoute>
           } />
         </Routes>

@@ -42,7 +42,7 @@ def reserve_ticket():
             SELECT 1 FROM Reservation
             WHERE TicketID = %s AND (
                 (ReservationStatus = 'Reserved' AND ExpirationTime > NOW()) OR
-                (ReservationStatus = 'Confirmed')
+                (ReservationStatus = 'Paid')
             )
             LIMIT 1
         """, (ticket_id,))

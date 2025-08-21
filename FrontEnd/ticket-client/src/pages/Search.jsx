@@ -56,6 +56,25 @@ function Search() {
     }
   };
 
+// Reserve ticket
+  const handleReserve = async (ticketID) => {
+    setError("");
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/reservations/reserve",
+        { ticketID },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert(response.data.message);
+    } catch (err) {
+      setError(err.response?.data?.message || "Error reserving ticket");
+    }
+  };
+
   return (
     <div>
       <h1>Search Tickets</h1>
@@ -144,6 +163,10 @@ function Search() {
             <br />
             Departure: {new Date(ticket.departureTime).toLocaleString()} | Arrival:{" "}
             {new Date(ticket.arrivalTime).toLocaleString()}
+            <br />
+            <button onClick={() => handleReserve(ticket.ticketID)}>
+                Reserve
+            </button>
             </li>
           ))}
         </ul>

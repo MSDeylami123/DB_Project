@@ -176,26 +176,27 @@ def ticket_details(ticket_id):
 
         elif vehicle_type == 'train':
             cur.execute("""
-                SELECT Operator, TrainNumber, Facilities
+                SELECT StarRating, CompartmentOption, Facilities
                 FROM Train
                 WHERE TicketID = %s
             """, (ticket_id,))
             row = cur.fetchone()
             if row:
-                details["trainOperator"] = row[0]
-                details["trainNumber"] = row[1]
+                details["trainStarRating"] = row[0]
+                details["trainCompartmentOption"] = row[1]
                 details["facilities"] = row[2]
 
         elif vehicle_type == 'bus':
             cur.execute("""
-                SELECT BusCompany, Facilities
+                SELECT BusCompany, SeatsPerRow, Facilities
                 FROM Bus
                 WHERE TicketID = %s
             """, (ticket_id,))
             row = cur.fetchone()
             if row:
                 details["busCompany"] = row[0]
-                details["facilities"] = row[1]
+                details["busSeatsPerRow"] = row[1]
+                details["facilities"] = row[2]
 
         cur.close()
         return jsonify(details), 200
