@@ -18,7 +18,7 @@ redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=T
 
 # --------------------- Elasticsearch client ---------------------
 es = Elasticsearch(
-    ["https://localhost:9200"],
+    ["http://localhost:9200"],
     basic_auth=("elastic", "YOUR_ELASTIC_PASSWORD"),  # replace with your password
     verify_certs=False
 )
@@ -49,7 +49,7 @@ def index_ticket_es(ticket):
             document=ticket
         )
     except Exception as e:
-        print(f"Failed to index ticket {ticket['TicketID']}: {str(e)}")
+        print(f"[ES SYNC ERROR] Failed to index ticket {ticket['TicketID']}: {str(e)}")
 
 # --------------------- 4. List of Cities ---------------------
 @tickets_bp.route('/cities', methods=['GET'])
@@ -105,7 +105,20 @@ def search_tickets():
 
     try:
         res = es.search(index=ES_INDEX, query=es_query)
-        tickets = [hit["_source"] for hit in res['hits']['hits']]
+        tickets = []
+        for hit in res['hits']['hits']:
+            t = hit["_source"]
+            # Transform keys to match frontend expectations
+            tickets.append({
+                "ticketID": t["TicketID"],
+                "origin": t["Origin"],
+                "destination": t["Destination"],
+                "vehicleType": t["VehicleType"],
+                "travelClass": t["TravelClass"],
+                "price": float(t["Price"]),
+                "departureTime": t["DepartureTime"].isoformat() if hasattr(t["DepartureTime"], "isoformat") else t["DepartureTime"],
+                "arrivalTime": t["ArrivalTime"].isoformat() if hasattr(t["ArrivalTime"], "isoformat") else t["ArrivalTime"]
+            })
         return jsonify({"tickets": tickets}), 200
     except Exception as e:
         return jsonify({"message": f"Error searching tickets: {str(e)}"}), 500
@@ -207,16 +220,18 @@ def index_all_tickets():
         print(f"[ES SYNC ERROR] Failed to index all tickets: {str(e)}")
 
 # --------------------- 8. Background Sync Thread ---------------------
-def es_sync_background(interval=300):
+def es_sync_background(app, interval=300):
+    """Background thread to index all tickets every `interval` seconds"""
     while True:
         try:
-            with current_app.app_context():
+            with app.app_context():
                 index_all_tickets()
         except Exception as e:
             print(f"[ES SYNC ERROR] {str(e)}")
         time.sleep(interval)
 
-def start_es_sync(interval=300):
-    thread = threading.Thread(target=es_sync_background, args=(interval,), daemon=True)
+def start_es_sync(app, interval=300):
+    """Start background thread for ES sync"""
+    thread = threading.Thread(target=es_sync_background, args=(app, interval), daemon=True)
     thread.start()
     print("[ES SYNC] Background sync thread started.")

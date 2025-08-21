@@ -5,6 +5,7 @@ from db import init_db
 import threading
 import time
 
+
 # --------------------- Flask App ---------------------
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
@@ -57,7 +58,10 @@ cleaner_thread.start()
 
 # --------------------- Start Elasticsearch Sync ---------------------
 # Sync tickets from MySQL to Elasticsearch every 5 minutes
-start_es_sync(interval=40)
+# --------------------- Start Elasticsearch Sync ---------------------
+# Sync tickets from MySQL to Elasticsearch every 40 seconds
+with app.app_context():
+    start_es_sync(app,interval=40)
 
 # --------------------- Test Route ---------------------
 @app.route("/")
