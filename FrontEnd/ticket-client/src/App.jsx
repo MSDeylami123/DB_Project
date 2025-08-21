@@ -10,6 +10,8 @@ import Search from "./pages/Search";
 import TicketDetails from "./pages/TicketDetails";
 import MyReservations from "./pages/MyReservations";
 import MyPurchases from "./pages/MyPurchases";
+import MyReports from "./pages/MyReports";
+import SubmitReport from "./pages/SubmitReport";
 import "./App.css";
 
 function App() {
@@ -61,6 +63,16 @@ function App() {
           <Route path="/reservations/purchased" element={
             <ProtectedRoute>
               <MyPurchases />
+            </ProtectedRoute>
+          } />
+          <Route path="/reports/my" element={
+            <ProtectedRoute>
+              <MyReports />
+            </ProtectedRoute>
+          } />
+          <Route path="/reports/submit" element={
+            <ProtectedRoute>
+              <SubmitReport />
             </ProtectedRoute>
           } />
         </Routes>

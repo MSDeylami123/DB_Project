@@ -35,6 +35,12 @@ function Dashboard() {
             <li>
               <Link to="/reservations/purchased">My Purchases</Link>
             </li>
+            <li>
+              <Link to="/reports/my">My Reports</Link>
+            </li>
+            <li>
+              <Link to="/reports/submit">Submit Report</Link>
+            </li>
           </ul>
         </div>
       )}
