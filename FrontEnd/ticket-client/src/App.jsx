@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Login from "./pages/Login";
 import OTPLogin from "./pages/OTPLogin";
-import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
 import SignUp from "./pages/SignUp";
+import Dashboard from "./pages/Dashboard";
 import Cities from "./pages/Cities";
 import UpdateProfile from "./pages/UpdateProfile";
 import Search from "./pages/Search";
@@ -12,6 +11,10 @@ import MyReservations from "./pages/MyReservations";
 import MyPurchases from "./pages/MyPurchases";
 import MyReports from "./pages/MyReports";
 import SubmitReport from "./pages/SubmitReport";
+import SupportReports from "./pages/SupportReports";
+import SupportReservations from "./pages/SupportReservations";
+import CancelledPayments from "./pages/CancelledPayments";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
 function App() {
@@ -29,52 +32,108 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/otp-login" element={<OTPLogin />} />
-          
-          <Route path="/update-profile" element={
-            <ProtectedRoute>
-              <UpdateProfile />
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/cities" element={
-            <ProtectedRoute>
-              <Cities />
-            </ProtectedRoute>
-          } />
-          <Route path="/search" element={
-            <ProtectedRoute>
-              <Search />
-            </ProtectedRoute>
-          } />
-          <Route path="/tickets/:id" element={
-            <ProtectedRoute>
-              <TicketDetails />
-            </ProtectedRoute>
-          } />
-          <Route path="/reservations/my" element={
-            <ProtectedRoute>
-              <MyReservations />
-            </ProtectedRoute>
-          } />
-          <Route path="/reservations/purchased" element={
-            <ProtectedRoute>
-              <MyPurchases />
-            </ProtectedRoute>
-          } />
-          <Route path="/reports/my" element={
-            <ProtectedRoute>
-              <MyReports />
-            </ProtectedRoute>
-          } />
-          <Route path="/reports/submit" element={
-            <ProtectedRoute>
-              <SubmitReport />
-            </ProtectedRoute>
-          } />
+
+          {/* Dashboard accessible to both roles */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger", "Support"]}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Passenger-only routes */}
+          <Route
+            path="/update-profile"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <UpdateProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cities"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <Cities />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <Search />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/:id"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <TicketDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reservations/my"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <MyReservations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reservations/purchased"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <MyPurchases />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/my"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <MyReports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/submit"
+            element={
+              <ProtectedRoute allowedRoles={["Passenger"]}>
+                <SubmitReport />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Support-only route */}
+          <Route
+            path="/reports/all"
+            element={
+              <ProtectedRoute allowedRoles={["Support"]}>
+                <SupportReports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reservations/all"
+            element={
+              <ProtectedRoute allowedRoles={["Support"]}>
+                <SupportReservations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cancelled"
+            element={
+              <ProtectedRoute allowedRoles={["Support"]}>
+                <CancelledPayments />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>
