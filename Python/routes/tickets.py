@@ -2,18 +2,29 @@ from flask import Blueprint, request, jsonify, current_app
 import jwt
 import redis
 from functools import wraps
+from elasticsearch import Elasticsearch
+import threading
+import time
 
-# Blueprint
+# --------------------- Blueprint ---------------------
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 
-# JWT Config
+# --------------------- JWT Config ---------------------
 JWT_SECRET = 'your_jwt_secret_key_here'
 JWT_ALGORITHM = 'HS256'
 
-# Redis 
+# --------------------- Redis ---------------------
 redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 
-# Decorator to protect routes
+# --------------------- Elasticsearch client ---------------------
+es = Elasticsearch(
+    ["https://localhost:9200"],
+    basic_auth=("elastic", "YOUR_ELASTIC_PASSWORD"),  # replace with your password
+    verify_certs=False
+)
+ES_INDEX = "tickets"
+
+# --------------------- JWT Decorator ---------------------
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -29,7 +40,18 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# 4. List of Cities
+# --------------------- Utility: Index ticket into Elasticsearch ---------------------
+def index_ticket_es(ticket):
+    try:
+        es.index(
+            index=ES_INDEX,
+            id=ticket["TicketID"],
+            document=ticket
+        )
+    except Exception as e:
+        print(f"Failed to index ticket {ticket['TicketID']}: {str(e)}")
+
+# --------------------- 4. List of Cities ---------------------
 @tickets_bp.route('/cities', methods=['GET'])
 @login_required
 def get_cities():
@@ -46,7 +68,7 @@ def get_cities():
     except Exception as e:
         return jsonify({"message": f"Error retrieving cities: {str(e)}"}), 500
 
-# 5. Search Tickets
+# --------------------- 5. Search Tickets (Elasticsearch) ---------------------
 @tickets_bp.route('/search', methods=['POST'])
 @login_required
 def search_tickets():
@@ -57,71 +79,43 @@ def search_tickets():
     vehicle_type = data.get('vehicleType')
     filters = data.get('filters', {})
 
-    query = "SELECT TicketID, Origin, Destination, DepartureTime, ArrivalTime, Price, VehicleType, TravelClass, CarrierID FROM Ticket WHERE 1=1"
-    params = []
+    es_query = {"bool": {"must": []}}
 
     if origin:
-        query += " AND Origin = %s"
-        params.append(origin)
+        es_query["bool"]["must"].append({"match": {"Origin": origin}})
     if destination:
-        query += " AND Destination = %s"
-        params.append(destination)
+        es_query["bool"]["must"].append({"match": {"Destination": destination}})
     if date:
-        query += " AND DATE(DepartureTime) = %s"
-        params.append(date)
+        es_query["bool"]["must"].append({"match": {"DepartureTime": date}})
     if vehicle_type:
-        query += " AND VehicleType = %s"
-        params.append(vehicle_type)
+        es_query["bool"]["must"].append({"match": {"VehicleType": vehicle_type}})
 
-    # Optional filters
-    if filters.get('price_min'):
-        query += " AND Price >= %s"
-        params.append(filters['price_min'])
-    if filters.get('price_max'):
-        query += " AND Price <= %s"
-        params.append(filters['price_max'])
-    if filters.get('departure_after'):
-        query += " AND TIME(DepartureTime) >= %s"
-        params.append(filters['departure_after'])
-    if filters.get('class'):
-        query += " AND TravelClass = %s"
-        params.append(filters['class'])
+    if filters.get("price_min") or filters.get("price_max"):
+        price_filter = {}
+        if filters.get("price_min"):
+            price_filter["gte"] = filters["price_min"]
+        if filters.get("price_max"):
+            price_filter["lte"] = filters["price_max"]
+        es_query["bool"]["must"].append({"range": {"Price": price_filter}})
 
+    if filters.get("departure_after"):
+        es_query["bool"]["must"].append({"range": {"DepartureTime": {"gte": filters["departure_after"]}}})
+    if filters.get("class"):
+        es_query["bool"]["must"].append({"match": {"TravelClass": filters["class"]}})
 
     try:
-        cur = current_app.mysql.connection.cursor()
-
-        cur.execute(query, tuple(params))
-        rows = cur.fetchall()
-        cur.close()
-
-        tickets = []
-        for row in rows:
-            tickets.append({
-                "ticketID": row[0],
-                "origin": row[1],
-                "destination": row[2],
-                "departureTime": row[3].isoformat(),
-                "arrivalTime": row[4].isoformat(),
-                "price": float(row[5]),
-                "vehicleType": row[6],
-                "travelClass": row[7],
-                "carrierID": row[8]
-            })
-
+        res = es.search(index=ES_INDEX, query=es_query)
+        tickets = [hit["_source"] for hit in res['hits']['hits']]
         return jsonify({"tickets": tickets}), 200
-
     except Exception as e:
         return jsonify({"message": f"Error searching tickets: {str(e)}"}), 500
 
-# 6. Ticket Details
+# --------------------- 6. Ticket Details ---------------------
 @tickets_bp.route('/<int:ticket_id>', methods=['GET'])
 @login_required
 def ticket_details(ticket_id):
     try:
         cur = current_app.mysql.connection.cursor()
-
-        # Get main ticket info
         cur.execute("""
             SELECT TicketID, Origin, Destination, DepartureTime, ArrivalTime, Price,
                    VehicleType, TravelClass, Capacity
@@ -134,18 +128,10 @@ def ticket_details(ticket_id):
             cur.close()
             return jsonify({"message": "Ticket not found"}), 404
 
-        # Map columns manually (in order of SELECT)
-        ticket = {
-            "TicketID": row[0],
-            "Origin": row[1],
-            "Destination": row[2],
-            "DepartureTime": row[3],
-            "ArrivalTime": row[4],
-            "Price": row[5],
-            "VehicleType": row[6],
-            "TravelClass": row[7],
-            "Capacity": row[8]
-        }
+        ticket = dict(zip(
+            ["TicketID","Origin","Destination","DepartureTime","ArrivalTime",
+             "Price","VehicleType","TravelClass","Capacity"], row
+        ))
 
         details = {
             "ticketID": ticket["TicketID"],
@@ -157,7 +143,7 @@ def ticket_details(ticket_id):
             "vehicleType": ticket["VehicleType"],
             "travelClass": ticket["TravelClass"],
             "capacity": ticket["Capacity"],
-            "facilities": None  # default if not applicable
+            "facilities": None
         }
 
         vehicle_type = ticket["VehicleType"].lower()
@@ -203,3 +189,34 @@ def ticket_details(ticket_id):
 
     except Exception as e:
         return jsonify({"message": f"Error retrieving ticket details: {str(e)}"}), 500
+
+# --------------------- 7. Bulk Index Existing Tickets ---------------------
+def index_all_tickets():
+    try:
+        cur = current_app.mysql.connection.cursor()
+        cur.execute("SELECT * FROM Ticket")
+        rows = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
+
+        for row in rows:
+            ticket = dict(zip(columns, row))
+            index_ticket_es(ticket)
+        cur.close()
+        print("[ES SYNC] All tickets indexed.")
+    except Exception as e:
+        print(f"[ES SYNC ERROR] Failed to index all tickets: {str(e)}")
+
+# --------------------- 8. Background Sync Thread ---------------------
+def es_sync_background(interval=300):
+    while True:
+        try:
+            with current_app.app_context():
+                index_all_tickets()
+        except Exception as e:
+            print(f"[ES SYNC ERROR] {str(e)}")
+        time.sleep(interval)
+
+def start_es_sync(interval=300):
+    thread = threading.Thread(target=es_sync_background, args=(interval,), daemon=True)
+    thread.start()
+    print("[ES SYNC] Background sync thread started.")

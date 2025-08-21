@@ -58,7 +58,7 @@ def get_my_reports():
     try:
         cur = current_app.mysql.connection.cursor()
         cur.execute("""
-            SELECT ReportID, TicketID, ReservationID, ReportCategory, ReportText, ProcessingStatus
+            SELECT ReportID, TicketID, ReservationID, ReportCategory, ReportText, ProcessingStatus, Answer
             FROM Reports
             WHERE UserID = %s
             ORDER BY ReportID DESC
@@ -66,7 +66,7 @@ def get_my_reports():
         rows = cur.fetchall()
         cur.close()
 
-        columns = ['ReportID', 'TicketID', 'ReservationID', 'ReportCategory', 'ReportText', 'ProcessingStatus']
+        columns = ['ReportID', 'TicketID', 'ReservationID', 'ReportCategory', 'ReportText', 'ProcessingStatus', 'Answer']
         return jsonify([dict(zip(columns, row)) for row in rows]), 200
 
     except Exception as e:

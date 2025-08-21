@@ -44,6 +44,11 @@ export default function MyReports() {
               <p><strong>Category:</strong> {report.ReportCategory}</p>
               <p><strong>Text:</strong> {report.ReportText}</p>
               <p><strong>Status:</strong> {report.ProcessingStatus}</p>
+              
+              {/* Show answer if it exists */}
+              {report.Answer && report.Answer.trim() !== "" && (
+                <p><strong>Answer:</strong> {report.Answer}</p>
+              )}
             </div>
           ))}
         </div>
