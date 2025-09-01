@@ -102,3 +102,29 @@ INSERT INTO Bus (VehicleID, TicketID, BusCompany, SeatsPerRow, Facilities) VALUE
 (5039, 1053, 'Greyhound', '1+2', '["None"]'),
 (5040, 1054, 'Megabus', '1+2', '["Recliner Seats"]');
 
+INSERT INTO Ticket 
+(TripType, VehicleType, Origin, Destination, DepartureTime, ArrivalTime, Price, Capacity, CarrierID, TravelClass)
+VALUES
+-- ✈️ Flights (short-term & future)
+('one-way', 'Plane', 'Berlin', 'Paris', '2025-08-18 07:30:00', '2027-08-18 09:00:00', 120.50, 180, 1, 'Economy');
+
+
+INSERT INTO Vehicle (TicketID) VALUES
+(1056), (1057);
+INSERT INTO Flight (VehicleID, TicketID, AirlineName, Stops, FlightNumber, FromAirport, DestinationAirport, Facilities) VALUES
+(5041, 1056, 'United', 0, 'FL2074', 'New York Intl', 'San Francisco Intl', '["None"]'),
+(5042, 1057, 'United', 0, 'FL2445', 'Chicago Intl', 'San Francisco Intl', '["Recliner Seats"]');
+
+
+INSERT INTO Ticket 
+(TripType, VehicleType, Origin, Destination, DepartureTime, ArrivalTime, Price, Capacity, CarrierID, TravelClass)
+VALUES
+-- ✈️ Flights (short-term & future)
+('one-way', 'Plane', 'Berlin', 'Paris', '2026-08-18 07:30:00', '2027-08-18 09:00:00', 120.50, 180, 1, 'Economy');
+
+
+INSERT INTO Vehicle (TicketID) VALUES
+(1056), (1057);
+INSERT INTO Flight (VehicleID, TicketID, AirlineName, Stops, FlightNumber, FromAirport, DestinationAirport, Facilities) VALUES
+(5041, 1056, 'United', 0, 'FL2074', 'New York Intl', 'San Francisco Intl', '["None"]'),
+(5042, 1057, 'United', 0, 'FL2445', 'Chicago Intl', 'San Francisco Intl', '["Recliner Seats"]');

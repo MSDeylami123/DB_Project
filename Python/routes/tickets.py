@@ -104,7 +104,7 @@ def search_tickets():
         es_query["bool"]["must"].append({"match": {"TravelClass": filters["class"]}})
 
     try:
-        res = es.search(index=ES_INDEX, query=es_query)
+        res = es.search(index=ES_INDEX, query=es_query, size=50)
         tickets = []
         for hit in res['hits']['hits']:
             t = hit["_source"]
